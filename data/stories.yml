@@ -1,0 +1,426 @@
+version: "2.0"
+
+stories:
+
+- story: continue conversation after anything else
+  steps:
+  - action: utter_anything_else
+  - intent: affirm
+  - action: utter_help
+
+- story: end of conversation
+  steps:
+  - action: utter_anything_else
+  - intent: deny
+  - action: utter_goodbye
+
+- story: show list best seller category
+  steps:
+  - intent: list_best_seller_category
+  - action: action_list_best_seller_category
+  - action: utter_anything_else
+
+- story: search list best seller book
+  steps:
+  - intent: list_best_seller
+  - action: list_best_seller_form
+  - active_loop: list_best_seller_form
+  - active_loop: null
+  - slot_was_set:
+    - requested_slot: null
+  - action: action_list_best_seller
+  - action: utter_anything_else
+
+- story: search list best seller book overview
+  steps:
+  - intent: list_best_seller_overview
+  - action: list_best_seller_overview_form
+  - active_loop: list_best_seller_overview_form
+  - active_loop: null
+  - slot_was_set:
+    - requested_slot: null
+  - action: action_list_best_seller_overview
+  - action: utter_anything_else
+
+- story: search book review 
+  steps:
+  - intent: book_review
+  - action: book_review_form
+  - active_loop: book_review_form
+  - active_loop: null
+  - slot_was_set:
+    - requested_slot: null
+  - action: action_book_review
+  - action: utter_anything_else
+
+- story: search book detail
+  steps:
+  - intent: book_detail
+  - action: book_detail_form
+  - active_loop: book_detail_form
+  - active_loop: null
+  - slot_was_set:
+    - requested_slot: null
+  - action: action_book_detail
+  - action: utter_anything_else
+
+- story: switch from list best seller to show list best seller category
+  steps:
+  - intent: list_best_seller
+  - action: list_best_seller_form
+  - active_loop: list_best_seller_form
+  - intent: list_best_seller_category
+  - active_loop: null
+  - action: action_list_best_seller_category
+  - action: utter_anything_else
+
+- story: switch from list best seller to list best seller overview
+  steps:
+  - intent: list_best_seller
+  - action: list_best_seller_form
+  - active_loop: list_best_seller_form
+  - intent: list_best_seller_overview
+  - active_loop: null
+  - action: list_best_seller_overview_form
+  - active_loop: list_best_seller_overview_form
+  - active_loop: null
+  - slot_was_set:
+    - requested_slot: null
+  - action: action_list_best_seller_overview
+  - action: utter_anything_else
+
+- story: switch from list best seller to book review
+  steps:
+  - intent: list_best_seller
+  - action: list_best_seller_form
+  - active_loop: list_best_seller_form
+  - intent: book_review
+  - active_loop: null
+  - action: book_review_form
+  - active_loop: book_review_form
+  - active_loop: null
+  - slot_was_set:
+    - requested_slot: null
+  - action: action_book_review
+  - action: utter_anything_else
+
+- story: switch from list best seller to book detail 
+  steps:
+  - intent: list_best_seller
+  - action: list_best_seller_form
+  - active_loop: list_best_seller_form
+  - intent: book_detail
+  - active_loop: null
+  - action: book_detail_form
+  - active_loop: book_detail_form
+  - active_loop: null
+  - slot_was_set:
+    - requested_slot: null
+  - action: action_book_detail
+  - action: utter_anything_else
+
+- story: switch from list best seller overview to show list best seller category
+  steps:
+  - intent: list_best_seller_overview
+  - action: list_best_seller_overview_form
+  - active_loop: list_best_seller_overview_form
+  - intent: list_best_seller_category
+  - active_loop: null
+  - action: action_list_best_seller_category
+  - action: utter_anything_else
+
+- story: switch from list best seller overview to list best seller
+  steps:
+  - intent: list_best_seller_overview
+  - action: list_best_seller_overview_form
+  - active_loop: list_best_seller_overview_form
+  - intent: list_best_seller
+  - active_loop: null
+  - action: list_best_seller_form
+  - active_loop: list_best_seller_form
+  - active_loop: null
+  - slot_was_set:
+    - requested_slot: null
+  - action: action_list_best_seller
+  - action: utter_anything_else
+
+- story: switch from list best seller overview to book review
+  steps:
+  - intent: list_best_seller_overview
+  - action: list_best_seller_overview_form
+  - active_loop: list_best_seller_overview_form
+  - intent: book_review
+  - active_loop: null
+  - action: book_review_form
+  - active_loop: book_review_form
+  - active_loop: null
+  - slot_was_set:
+    - requested_slot: null
+  - action: action_book_review
+  - action: utter_anything_else
+
+- story: switch from list best seller overview to book detail 
+  steps:
+  - intent: list_best_seller_overview
+  - action: list_best_seller_overview_form
+  - active_loop: list_best_seller_overview_form
+  - intent: book_detail
+  - active_loop: null
+  - action: book_detail_form
+  - active_loop: book_detail_form
+  - active_loop: null
+  - slot_was_set:
+    - requested_slot: null
+  - action: action_book_detail
+  - action: utter_anything_else
+
+- story: switch from book review to show list best seller category
+  steps:
+  - intent: book_review
+  - action: book_review_form
+  - active_loop: book_review_form
+  - intent: list_best_seller_category
+  - active_loop: null
+  - action: action_list_best_seller_category
+  - action: utter_anything_else
+
+- story: switch from book review to list best seller overview
+  steps:
+  - intent: book_review
+  - action: book_review_form
+  - active_loop: book_review_form
+  - intent: list_best_seller_overview
+  - active_loop: null
+  - action: list_best_seller_overview_form
+  - active_loop: list_best_seller_overview_form
+  - active_loop: null
+  - slot_was_set:
+    - requested_slot: null
+  - action: action_list_best_seller_overview
+  - action: utter_anything_else
+
+- story: switch from book review to list best seller
+  steps:
+  - intent: book_review
+  - action: book_review_form
+  - active_loop: book_review_form
+  - intent: list_best_seller
+  - active_loop: null
+  - action: list_best_seller_form
+  - active_loop: list_best_seller_form
+  - active_loop: null
+  - slot_was_set:
+    - requested_slot: null
+  - action: action_list_best_seller
+  - action: utter_anything_else
+
+- story: switch from book review to book detail 
+  steps:
+  - intent: book_review
+  - action: book_review_form
+  - active_loop: book_review_form
+  - intent: book_detail
+  - active_loop: null
+  - action: book_detail_form
+  - active_loop: book_detail_form
+  - active_loop: null
+  - slot_was_set:
+    - requested_slot: null
+  - action: action_book_detail
+  - action: utter_anything_else
+
+- story: switch from book detail to show list best seller category
+  steps:
+  - intent: book_review
+  - action: book_review_form
+  - active_loop: book_review_form
+  - intent: list_best_seller_category
+  - active_loop: null
+  - action: action_list_best_seller_category
+  - action: utter_anything_else
+
+- story: switch from book detail to list best seller overview
+  steps:
+  - checkpoint: switch book detail
+  - intent: list_best_seller_overview
+  - active_loop: null
+  - action: list_best_seller_overview_form
+  - active_loop: list_best_seller_overview_form
+  - active_loop: null
+  - slot_was_set:
+    - requested_slot: null
+  - action: action_list_best_seller_overview
+  - action: utter_anything_else
+
+- story: switch from book detail to list best seller
+  steps:
+  - intent: book_review
+  - action: book_review_form
+  - active_loop: book_review_form
+  - intent: list_best_seller
+  - active_loop: null
+  - action: list_best_seller_form
+  - active_loop: list_best_seller_form
+  - active_loop: null
+  - slot_was_set:
+    - requested_slot: null
+  - action: action_list_best_seller
+  - action: utter_anything_else
+
+- story: switch from book detail to book review 
+  steps:
+  - intent: book_review
+  - action: book_review_form
+  - active_loop: book_review_form
+  - intent: book_review
+  - active_loop: null
+  - action: book_review_form
+  - active_loop: book_review_form
+  - active_loop: null
+  - slot_was_set:
+    - requested_slot: null
+  - action: action_book_review
+  - action: utter_anything_else
+
+- story: category interjection in list best seller form
+  steps:
+  - intent: list_best_seller
+  - action: list_best_seller_form
+  - active_loop: list_best_seller_form
+  - slot_was_set:
+    - requested_slot: category
+  - intent: explain
+  - action: utter_explain_category
+  - action: list_best_seller_form
+
+- story: time interjection in list best seller form
+  steps:
+  - intent: list_best_seller
+  - action: list_best_seller_form
+  - active_loop: list_best_seller_form
+  - slot_was_set:
+    - requested_slot: time
+  - intent: explain
+  - action: utter_explain_time
+  - action: list_best_seller_form
+
+- story: time interjection in list best seller overview form
+  steps:
+  - intent: list_best_seller_overiew
+  - action: list_best_seller_overview_form
+  - active_loop: list_best_seller_overview_form
+  - slot_was_set:
+    - requested_slot: time
+  - intent: explain
+  - action: utter_explain_time
+  - action: list_best_seller_overview_form
+
+- story: number interjection in book review form
+  steps:
+  - intent: book_review
+  - action: book_review_form
+  - active_loop: book_review_form
+  - slot_was_set:
+    - requested_slot: number
+  - intent: explain
+  - action: utter_explain_number
+  - action: book_review_form
+
+- story: title interjection in book review form
+  steps:
+  - intent: book_review
+  - action: book_review_form
+  - active_loop: book_review_form
+  - slot_was_set:
+    - requested_slot: title
+  - intent: explain
+  - action: utter_explain_title
+  - action: book_review_form
+
+- story: PERSON interjection in book review form
+  steps:
+  - intent: book_review
+  - action: book_review_form
+  - active_loop: book_review_form
+  - slot_was_set:
+    - requested_slot: PERSON
+  - intent: explain
+  - action: utter_explain_PERSON
+  - action: book_review_form
+
+- story: age_group interjection in book detail form
+  steps:
+  - intent: book_detail
+  - action: book_detail_form
+  - active_loop: book_detail_form
+  - slot_was_set:
+    - requested_slot: age_group
+  - intent: explain
+  - action: utter_explain_age_group
+  - action: book_detail_form
+
+- story: PERSON interjection in book detail form
+  steps:
+  - intent: book_detail
+  - action: book_detail_form
+  - active_loop: book_detail_form
+  - slot_was_set:
+    - requested_slot: PERSON
+  - intent: explain
+  - action: utter_explain_PERSON
+  - action: book_detail_form
+
+- story: contributor interjection in book detail form
+  steps:
+  - intent: book_detail
+  - action: book_detail_form
+  - active_loop: book_detail_form
+  - slot_was_set:
+    - requested_slot: contributor
+  - intent: explain
+  - action: utter_explain_contributor
+  - action: book_detail_form
+
+- story: number interjection in book detail form
+  steps:
+  - intent: book_detail
+  - action: book_detail_form
+  - active_loop: book_detail_form
+  - slot_was_set:
+    - requested_slot: number
+  - intent: explain
+  - action: utter_explain_number
+  - action: book_detail_form
+
+- story: amount-of-money interjection in book detail form
+  steps:
+  - intent: book_detail
+  - action: book_detail_form
+  - active_loop: book_detail_form
+  - slot_was_set:
+    - requested_slot: amount-of-money
+  - intent: explain
+  - action: utter_explain_amount_of_money
+  - action: book_detail_form
+
+- story: publisher interjection in book detail form
+  steps:
+  - intent: book_detail
+  - action: book_detail_form
+  - active_loop: book_detail_form
+  - slot_was_set:
+    - requested_slot: publisher
+  - intent: explain
+  - action: utter_explain_publisher
+  - action: book_detail_form
+
+- story: title interjection in book detail form
+  steps:
+  - intent: book_detail
+  - action: book_detail_form
+  - active_loop: book_detail_form
+  - slot_was_set:
+    - requested_slot: title
+  - intent: explain
+  - action: utter_explain_title
+  - action: book_detail_form

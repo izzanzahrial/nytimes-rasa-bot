@@ -1,0 +1,14 @@
+#activate conda
+conda activate rasavenv
+
+#train rasa nlu data
+rasa train
+
+#rasa run custom action
+rasa run actions
+
+#rasa run interactive commands
+rasa interactive
+
+#rasa run in commands
+rasa shell

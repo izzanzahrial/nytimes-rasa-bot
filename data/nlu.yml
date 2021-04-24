@@ -1,0 +1,350 @@
+version: "2.0"
+nlu:
+- intent: greet
+  examples: |
+    - hey
+    - hello
+    - hi
+    - hello there
+    - good morning
+    - good evening
+    - moin
+    - hey there
+    - let's go
+    - hey dude
+    - goodmorning
+    - goodevening
+    - good afternoon
+- intent: goodbye
+  examples: |
+    - good afternoon
+    - cu
+    - good by
+    - cee you later
+    - good night
+    - bye
+    - goodbye
+    - have a nice day
+    - see you around
+    - bye bye
+    - see you later
+- intent: affirm
+  examples: |
+    - indeed
+    - correct
+    - that sounds good
+    - yes
+    - yess please
+    - of course
+    - yup
+    - yeah
+    - yes please
+    - yes plz
+    - Sure
+    - Ok
+    - sweet
+    - cool,
+    - yes...
+    - y
+- intent: deny
+  examples: |
+    - not really
+    - no
+    - I don't think so
+    - never
+    - no way
+    - nope
+    - no thanks
+    - I dunno
+    - Nothing!
+    - nevermind
+    - n
+    - No
+- intent: bot_challenge
+  examples: |
+    - are you a bot?
+    - are you a human?
+    - am I talking to a bot?
+    - am I talking to a human?
+- intent: help
+  examples: |
+    - help
+    - what can you do?
+    - what can I ask you?
+    - what do you do?
+    - what can you help me with?
+    - help me
+    - help, what do you do
+    - how do I use this
+    - how can you help me
+    - What are the things that you can do?
+    - What else can you help me with?
+- intent: thanks
+  examples: |
+    - thank you goodbye
+    - okay thank you goodbye
+    - thank you bye
+    - um okay thank you good bye
+    - thank you
+    - and thats all thank you and good bye
+    - okay thank you
+    - thanks
+    - thanks goodbye
+    - thank you and good bye
+    - Thanks!
+    - Awesome, you are a good bot!
+- intent: inform
+  examples: |
+    - [$10](amount-of-money)
+    - [$20](amount-of-money)
+    - [$30](amount-of-money)
+    - [5000](amount-of-money)
+    - [500](amount-of-money)
+    - [0](amount-of-money)
+    - [$100](amount-of-money)
+    - [$500](amount-of-money)
+    - [100 dollars](amount-of-money)
+    - [1000 dollars](amount-of-money)
+    - [9786027572867](number)
+    - [9786020402338](number)
+    - [9786027572888](number)
+    - [9780399169274](number)
+    - [9786020402](number)
+    - [6020402369](number)
+    - [9786020444](number)
+    - [6020402666](number)
+    - [039916927X](number)
+    - [20](number)
+    - [30](number)
+    - [40](number)
+    - [0](number)
+    - [Combined Print and E-Book Fiction](category)
+    - [Hardcover Fiction](category)
+    - [Trade Fiction Paperback](category)
+    - [Mass Market Paperback](category)
+    - [Paperback Nonfiction](category)
+    - [E-Book Fiction](category)
+    - [Hardcover Advice](category)
+    - [Paperback Advice](category)
+    - [Advice How-To and Miscellaneous](category)
+    - [Hardcover Graphic Books](category)
+    - [Paperback Graphic Books](category)
+    - [Manga](category)
+    - [Combined Print Fiction](category)
+    - [Combined Print Nonfiction](category)
+    - [Chapter Books](category)
+    - [Childrens Middle Grade](category)
+    - [Childrens Middle Grade E-Book](category)
+    - [Childrens Middle Grade Hardcover](category)
+    - [Childrens Middle Grade Paperback](category)
+    - [Paperback Books](category)
+    - [Picture Books](category)
+    - [Series Books](category)
+    - [Young Adult](category)
+    - [Young Adult E-Book](category)
+    - [Young Adult Hardcover](category)
+    - [Young Adult Paperback](category)
+    - [Animals](category)
+    - [Audio Fiction](category)
+    - [Audio Nonfiction](category)
+    - [Business Books](category)
+    - [Celebrities](category)
+    - [Crime and Punishment](category)
+    - [Culture](category)
+    - [Education](category)
+    - [Espionage](category)
+    - [Expeditions Disasters and Adventures](category)
+    - [Fashion Manners and Customs](category)
+    - [Food and Fitness](category)
+    - [Games and Activities](category)
+    - [Graphic Books and Manga](category)
+    - [Hardcover Business Books](category)
+    - [Health](category)
+    - [Humor](category)
+    - [Indigenous Americans](category)
+    - [Relationships](category)
+    - [Mass Market Monthly](category)
+    - [Middle Grade Paperback Monthly](category)
+    - [Paperback Business Books](category)
+    - [Family](category)
+    - [Hardcover Political Books](category)
+    - [Race and Civil Rights](category)
+    - [Religion Spirituality and Faith](category)
+    - [Science](category)
+    - [Sports](category)
+    - [Travel](category)
+    - [Young Adult Paperback Monthly](category)
+    - [The hill we climb](title)
+    - [The four winds](title)
+    - [The red book](title)
+    - [The midnight library](title)
+    - [Klara and the sun](title)
+    - [The gangster](title)
+    - [A girl's guide to moving on](title)
+    - [#GIRLBOSS](title)
+    - [Bob](PERSON)
+    - [bill](PERSON)
+    - [anusha](PERSON)
+    - [John](PERSON)
+    - [gary](PERSON)
+    - [Claire](PERSON)
+    - [Imani](PERSON)
+    - [darnell](PERSON)
+    - [Guangchen](PERSON)
+    - [cheng](PERSON)
+    - [Putnam](PERSON)
+    - [William Baker](PERSON)
+    - [Evan Oslo](PERSON)
+    - [Lisa Macintyre](PERSON)
+    - [Karen Lancaster](PERSON)
+    - [Percy Donald](PERSON)
+    - [Kyle Gardner](PERSON)
+    - [Katy Parrow](PERSON)
+    - [Clive Cussler](PERSON)
+    - [Haruki Murakami](PERSON)
+    - [Justin Scott](PERSON)
+    - [Sophia Amoruso](PERSON)
+    - [Debbie Macomber](PERSON)
+    - [Ballantine](PERSON)
+    - [None](time)
+    - [None](PERSON)
+    - [None](category)
+    - [None](title)
+    - [None](number)
+    - [None](amount-of-money)
+- intent: explain
+  examples: |
+    - Why do you need this
+    - Can you explain it
+    - Can you elaborate
+    - Why should i fill this
+    - Do you really need this
+- intent: out_of_scope
+  examples: |
+    - what is the square root of 5
+    - I want to know the weather
+    - what is the meaning of life.
+    - Fridge Isn't Running
+    - my tv isn't working
+    - I want a pizza
+    - my washing machine isn't working
+    - what year is it
+    - order a pizza
+    - I want to order a pizza
+    - what is the weather today
+    - what is the weather
+- intent: chit_chat
+  examples: |
+    - What is your name?
+    - May I know your name?
+    - What do people call you?
+    - Do you have a name for yourself?
+    - What's the weather like today?
+    - Does it look sunny outside today?
+    - Oh, do you mind checking the weather for me please?
+    - I like sunny days in Berlin.
+- intent: list_best_seller_category
+  examples: |
+    - I want to search category
+    - I want to check category
+    - I need to check category
+    - Can you show me the category
+    - Can you show me category
+    - Can i search the category
+    - Can i search category
+    - Where can i see the category
+    - Where can i see category
+    - Where can i see list of category
+    - Show me the category
+    - Show me category
+    - Let me see the list of the category
+    - Let me see the list of category
+    - Let me see the category list
+    - can you show me best seller category
+- intent: list_best_seller
+  examples: |
+    - I want to search best seller list
+    - I want to search the best seller list
+    - I want to search list best seller
+    - I want to search the list best seller
+    - Can you search me best seller list
+    - Can you search me list best seller
+    - Can you show me list best seller
+    - Can you show me best seller list
+    - Show me best seller list
+    - Show me list best seller
+    - Show me the best seller list
+    - I want to check list [Food and Fitness](category)
+    - Can you search me best seller [education](category) list
+    - Can you show me list best seller [culture](category)
+    - Show me best seller [business book](category) list
+    - Show me list best seller [animals](category)
+    - can you show me list of best seller [sports](category)
+    - can you show me the list of best seller [sports](category)
+- intent: list_best_seller_overview
+  examples: |
+    - I want to search best seller overview list
+    - I want to search the best seller overview list
+    - I want to search list best seller overview
+    - I want to search the list best seller overview
+    - Can you search me best seller list overview
+    - Can you search me list best seller overview
+    - Can you show me list best seller overview
+    - Can you show me best seller list overview
+    - Show me best seller list overview
+    - Show me list best seller overview
+    - Show me the best seller list overview
+    - I want to search best seller overview list at [1995-04-04](time)
+    - I want to search best seller overview at [1995-05-20](time)
+    - Can you search me best seller list overview at [1968-02-12](time)
+    - Can you show me best seller overview list at [19967-05-18](time)
+    - Show me best seller list overview at [2000-01-01](time)
+    - Show me list best seller overview at [1999-09-09](time)
+- intent: book_review
+  examples: |
+    - I want to search book review
+    - I want to search the book review
+    - I want to search list book review
+    - I want to search the list book review
+    - Can you search me book review list
+    - Can you search me book review
+    - Can you show me list book review
+    - Can you show me book review list
+    - Show me book review
+    - Show me list book review
+    - Show me the book review list
+    - I want to search book review [9786027572888](number)
+    - I want to search list book review by [Haruki Murakami](PERSON)
+    - I want to search the book review of [The red book](title)
+    - Can you search me book review of [9786020444](number)
+    - Can you show me book review by [Clive Cussler](PERSON)
+    - Can you show me book review of [The gangster](title)
+    - Show me book review of [6020402666](number)
+    - Show me list book review of [The four winds](title)
+    - Show me the book review list by [Justin Scott](PERSON)
+- intent: book_detail
+  examples: |
+    - I want to search book detail
+    - I want to search the book detail
+    - I want to search list book detail
+    - I want to search the list book detail
+    - Can you search me book detail list
+    - Can you search me book detail
+    - Can you show me list book detail
+    - Can you show me book detail list
+    - Show me book detail
+    - Show me list book detail
+    - Show me the book detail list
+    - I want to search book detail of [9780399169274](number)
+    - I want to serach detail of book [039916927X](number)
+    - Can you show me list of book detail by [Sophia Amoruso](PERSON)
+    - Can you search me book detail that contribut by [Debbie Macomber](PERSON)
+    - Can you show me book detail by the age of [0](number)
+    - Show me book detail at price [0](amount-of-money)
+    - Show me the list of book detail that published by [Putnam](PERSON)
+    - Show me book detail of [#GIRLBOSS](title)
+    - I want to search book detail of [A girl's guide to moving on](title)
+    - I want to serach book detail by [Ballantine](PERSON)
+- intent: none
+  examples: |
+    - None
