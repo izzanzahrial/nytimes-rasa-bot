@@ -241,7 +241,6 @@ stories:
 
 - story: switch from book detail to list best seller overview
   steps:
-  - checkpoint: switch book detail
   - intent: list_best_seller_overview
   - active_loop: null
   - action: list_best_seller_overview_form
@@ -306,7 +305,7 @@ stories:
 
 - story: time interjection in list best seller overview form
   steps:
-  - intent: list_best_seller_overiew
+  - intent: list_best_seller_overview
   - action: list_best_seller_overview_form
   - active_loop: list_best_seller_overview_form
   - slot_was_set:
@@ -424,3 +423,25 @@ stories:
   - intent: explain
   - action: utter_explain_title
   - action: book_detail_form
+
+- story: skip for certain slot in book review
+  steps:
+  - intent: book_review
+  - action: book_review_form
+  - active_loop: book_review_form
+  - slot_was_set:
+    - requested_slot: number
+  - slot_was_set:
+    - number: skip
+  - slot_was_set:
+    - requested_slot: title
+  - slot_was_set:
+    - title: barbarian days
+  - slot_was_set:
+    - requested_slot: PERSON
+  - slot_was_set:
+    - PERSON: skip
+  - slot_was_set:
+    - requested_slot: null
+  - active_loop: null
+  - action: action_book_review

@@ -22,7 +22,6 @@ rules:
   steps:
   - intent: greet
   - action: utter_greet
-  - action: utter_help
 
 - rule: Help
   steps:

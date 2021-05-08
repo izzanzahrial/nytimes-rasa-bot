@@ -6,9 +6,11 @@
 
 
 from typing import Any, Text, Dict, List
-from rasa_sdk import Tracker, Action, FormValidationAction
+from rasa_sdk import Tracker, Action
 from rasa_sdk.executor import CollectingDispatcher
-from rasa_sdk.events import SlotSet
+from rasa_sdk.types import DomainDict
+from rasa_sdk.events import SlotSet, AllSlotsReset
+from rasa_sdk.forms import FormValidationAction
 from dotenv import load_dotenv
 import os
 import requests
@@ -61,7 +63,7 @@ class ActionListBestSeller(Action):
         domain: Dict[Text, Any]
     ) -> List[Dict[Text, Any]]:
 
-        if tracker.get_slot("time") != None:
+        if tracker.get_slot("time") != "skip":
             category = tracker.get_slot("category")
             time = tracker.get_slot("time")
 
@@ -71,49 +73,64 @@ class ActionListBestSeller(Action):
             data = response.json()
 
             if data["status"] == "ERROR":
-                dispacther.utter_message(text="This requires at least one parameter")
-            elif data["results"] is None:
-                dispacther.utter_message(template="utter_doesnt_exist")
-            else:
-                dispacther.utter_message(text=f"Here's a list of best seller {category} \n")
+                dispacther.utter_message(response="utter_doesnt_exist")
+            elif data["results"]:
+                
+                data_range = data["num_results"]
 
-                for i in range(9):
-                    amazon_url = data["results"]["books"][i]["amazon_product_url"]
-                    title = data["results"]["books"][i]["title"]
-                    author = data["results"]["books"][i]["author"]
-                    book_image = data["results"]["books"][i]["book_image"]
-                    dispacther.utter_message(text=f"{i+1}. Title = {title} \n Author = {author} \n Amazon link = {amazon_url} \n")
-                    dispacther.utter_message(image=f"{book_image} \n")
-                    dispacther.utter_message(text="\n")
+                if data_range == 0:
+                    dispacther.utter_message(response="utter_doesnt_exist")
+                else:
+                    if data_range > 18:
+                        data_range = 18
+
+                    dispacther.utter_message(text=f"Here's a list of best seller {category}\n")
+
+                    for i in range(data_range):
+                        amazon_url = data["results"]["books"][i]["amazon_product_url"]
+                        title = data["results"]["books"][i]["title"]
+                        author = data["results"]["books"][i]["author"]
+                        book_image = data["results"]["books"][i]["book_image"]
+                        dispacther.utter_message(text=f"{i+1}. Title = {title}\nAuthor = {author}\nWhere to buy = {amazon_url}\n")
+                        dispacther.utter_message(image=f"{book_image}")
+            else:
+                dispacther.utter_message(response="utter_doesnt_exist")
                     
-        elif tracker.get_slot("time") == None:
+        elif tracker.get_slot("time") == "skip":
             category = tracker.get_slot("category")
 
             url = f"https://api.nytimes.com/svc/books/v3/lists/current/{category}.json?&api-key="+api_key
 
             response = requests.get(url)
             data = response.json()
-
+            
             if data["status"] == "ERROR":
-                dispacther.utter_message(text="This requires at least one parameter")
-            elif data["results"] is None:
-                dispacther.utter_message(template="utter_failed")
+                dispacther.utter_message(response="utter_doesnt_exist")
+            elif data["results"]:
+                
+                data_range = data["num_results"]
+
+                if data_range == 0:
+                    dispacther.utter_message(response="utter_doesnt_exist")
+                else:
+                    if data_range > 18:
+                        data_range = 18
+
+                    dispacther.utter_message(text=f"Here's a list of best seller {category}\n")
+
+                    for i in range(data_range):
+                        amazon_url = data["results"]["books"][i]["amazon_product_url"]
+                        title = data["results"]["books"][i]["title"]
+                        author = data["results"]["books"][i]["author"]
+                        book_image = data["results"]["books"][i]["book_image"]
+                        dispacther.utter_message(text=f"{i+1}. Title = {title}\nAuthor = {author}\nWhere to buy = {amazon_url}\n")
+                        dispacther.utter_message(image=f"{book_image}")
             else:
-                dispacther.utter_message(text=f"Here's a list of best seller {category} \n")
-
-                for i in range(9):
-                    amazon_url = data["results"]["books"][i]["amazon_product_url"]
-                    title = data["results"]["books"][i]["title"]
-                    author = data["results"]["books"][i]["author"]
-                    book_image = data["results"]["books"][i]["book_image"]
-                    dispacther.utter_message(text=f"{i+1}. Title = {title} \n Author = {author} \n Amazon link = {amazon_url} \n")
-                    dispacther.utter_message(image=f"{book_image} \n")
-                    dispacther.utter_message(text="\n")
-
+                dispacther.utter_message(response="utter_failed")
         else:
-            dispacther.utter_message(template="utter_failed")
+            dispacther.utter_message(response="utter_can't_skip_all")
 
-        return []
+        return [AllSlotsReset()]
 
 class ValidateListBestSellerForm(FormValidationAction):
     """Validates Slots of the list_best_seller_form"""
@@ -124,52 +141,41 @@ class ValidateListBestSellerForm(FormValidationAction):
 
     async def validate_category(
         self, 
-        value: Text,
+        slot_value: Any,
         dispatcher: CollectingDispatcher,
         tracker: Tracker,
-        domain: Dict[Text, Any],
+        domain: DomainDict,
     ) -> Dict[Text, Any]:
         """Validate value of 'category' slot"""
-        if not value:
-            return {"category": None}
+        if slot_value.lower() == "skip":
+            return {"category": "skip"}
         
-        if type(value) is str:
+        if type(slot_value) is str:
             category = tracker.get_slot("category")
-            if category.lower() == 'none':
-                return {"category": None}
             return {"category": category}
         else: 
-            dispatcher.utter_message(template="utter_wrong_type")
+            dispatcher.utter_message(response="utter_wrong_type")
             return {"category": None}
         
         return {"category": None}
 
     async def validate_time(
         self, 
-        value: Text,
+        slot_value: Any,
         dispatcher: CollectingDispatcher,
         tracker: Tracker,
-        domain: Dict[Text, Any],
+        domain: DomainDict,
     ) -> Dict[Text, Any]:
         """Validate value of 'time' slot"""
-
-        if not value:
-            return {"time": None}
-        
-        if type(value) is str:
+        if type(slot_value) is str:
+            if slot_value.lower() == "skip":
+                return {"time": "skip"}
             time = tracker.get_slot("time")
-            if time.lower() == 'none':
-                return {"time": None}
-            dateformat = '%Y-%m-%d'
-            try:
-                output_time = datetime.date.strptime(time, dateformat)
-                return {"time": output_time}
-            except ValueError:
-                dispatcher.utter_message(template="utter_wrong_type")
-                return {"time": None}
-        
+            return {"time": time}
+            
+        dispatcher.utter_message(response="utter_wrong_type")
         return {"time": None}
-
+        
 class ActionListBestSellerListOverview(Action):
     """List Best Seller Overview by time"""
 
@@ -184,7 +190,7 @@ class ActionListBestSellerListOverview(Action):
         domain: Dict[Text, Any]
     ) -> List[Dict[Text, Any]]:
 
-        if tracker.get_slot("time") != None:
+        if tracker.get_slot("time") != 'skip':
             time = tracker.get_slot("time")
                 
             url = f"https://api.nytimes.com/svc/books/v3/lists/overview.json"
@@ -197,17 +203,26 @@ class ActionListBestSellerListOverview(Action):
             response = requests.get(url, params=parameters)
             data = response.json()
 
-            if data["results"] is None:
-                dispacther.utter_message(template="utter_doesnt_exist")
-            else:
+            data_range = data["num_results"]
+            if data_range > 18:
+                data_range = 18
+
+            if data["results"]:
                 dispacther.utter_message(text=f"Here's a list of list best seller at {time} \n")
 
-                for i in range(9):
+                for i in range(data_range):
                     list_name = data["results"]["lists"][i]["list_name"]
-                    dispacther.utter_message(text=f"{i+1}. {list_name} \n")
-                    dispacther.utter_message(text="\n")
+                    book_image = data["results"]["lists"][i]["books"][0]["book_image"]
+                    author = data["results"]["lists"][i]["books"][0]["author"]
+                    title = data["results"]["lists"][i]["books"][0]["title"]
+                    description = data["results"]["lists"][i]["books"][0]["description"]
+                    amazon = data["results"]["lists"][i]["books"][0]["buy_links"][0]["url"]
+                    dispacther.utter_message(text=f"{i+1}. List name: {list_name}\nTitle: {title}\nAuthor: {author}\nDescription: {description}\nWhere to buy: {amazon}")
+                    dispacther.utter_message(image=f"{book_image}")
+            else:
+                dispacther.utter_message(response="utter_doesnt_exist")
 
-        elif tracker.get_slot("time") == None:
+        elif tracker.get_slot("time") == 'skip':
 
             url = f"https://api.nytimes.com/svc/books/v3/lists/overview.json?&api-key={api_key}"
 
@@ -217,22 +232,31 @@ class ActionListBestSellerListOverview(Action):
 
             response = requests.get(url, params=parameters)
             data = response.json()
-            today = datetime.date.now()
+            today = datetime.date.today()
 
-            if data["results"] is None:
-                dispacther.utter_message(template="utter_doesnt_exist")
-            else:
+            data_range = data["num_results"]
+            if data_range > 18:
+                data_range = 18
+
+            if data["results"]:
                 dispacther.utter_message(text=f"Here's a list of list best seller at {today} \n")
 
-                for i in range(9):
+                for i in range(data_range):
                     list_name = data["results"]["lists"][i]["list_name"]
-                    dispacther.utter_message(text=f"{i+1}. {list_name} \n")
-                    dispacther.utter_message(text="\n")
+                    book_image = data["results"]["lists"][i]["books"][0]["book_image"]
+                    author = data["results"]["lists"][i]["books"][0]["author"]
+                    title = data["results"]["lists"][i]["books"][0]["title"]
+                    description = data["results"]["lists"][i]["books"][0]["description"]
+                    amazon = data["results"]["lists"][i]["books"][0]["buy_links"][0]["url"]
+                    dispacther.utter_message(text=f"{i+1}. List name: {list_name}\nTitle: {title}\nAuthor: {author}\nDescription: {description}\nWhere to buy: {amazon}")
+                    dispacther.utter_message(image=f"{book_image}")
+            else:
+                dispacther.utter_message(response="utter_doesnt_exist")
 
         else:
-            dispacther.utter_message(template="utter_failed")
+            dispacther.utter_message(response="utter_can't_skip_all")
 
-        return []
+        return [AllSlotsReset()]
 
 class ValidateBestSellerListOverview(FormValidationAction):
     """Validates Slots of the list_best_seller_form"""
@@ -243,27 +267,19 @@ class ValidateBestSellerListOverview(FormValidationAction):
 
     async def validate_time(
         self, 
-        value: Text,
+        slot_value: Any,
         dispatcher: CollectingDispatcher,
         tracker: Tracker,
-        domain: Dict[Text, Any],
+        domain: DomainDict,
     ) -> Dict[Text, Any]:
         """Validate value of 'time' slot"""
-        if not value:
-            return {"time": None}
-        
-        if type(value) is str:
+        if type(slot_value) is str:
+            if slot_value.lower() == "skip":
+                return {"time": "skip"}
             time = tracker.get_slot("time")
-            if time.lower() == 'none':
-                return {"time": None}
-            dateformat = '%Y-%m-%d'
-            try:
-                output_time = datetime.date.strftime(time, dateformat)
-                return {"time": output_time}
-            except ValueError:
-                dispatcher.utter_message(template="utter_wrong_type")
-                return {"time": None}
-        
+            return {"time": time}
+            
+        dispatcher.utter_message(response="utter_wrong_type")
         return {"time": None}
 
 
@@ -284,41 +300,47 @@ class ActionBookReview(Action):
         number = tracker.get_slot("number")
         title = tracker.get_slot("title")
         author = tracker.get_slot("PERSON")
-    
-        if number is not None or title is not None or author is not None:
+
+        param = [number, title, author]
+        param = checkParam(param)
+
+        if param is not None:
 
             url = f"https://api.nytimes.com/svc/books/v3/reviews.json"
 
             parameters = {
                 'api-key': api_key,
-                'isbn': number,
-                'title': title,
-                'author': author,
+                'isbn': param[0],
+                'title': param[1],
+                'author': param[2],
             }
 
             response = requests.get(url, params=parameters)
             data = response.json()
 
+            data_range = data["num_results"]
+            if data_range > 18:
+                data_range = 18
+
             if data["status"] == "ERROR":
                 dispacther.utter_message(text="This requires at least one parameter")
-            elif data["results"] is None:
-                dispacther.utter_message(template="utter_doesnt_exist")
-            else:
+            elif data["results"]:
                 dispacther.utter_message(text=f"Here's a list of review \n")
 
-                for i in range(9):
+                for i in range(data_range):
                     review_url = data["results"][i]["url"]
                     publication_dt = data["results"][i]["publication_dt"]
                     review_by = data["results"][i]["byline"]
                     book_title = data["results"][i]["book_title"]
                     book_author = data["results"][i]["book_author"]
-                    dispacther.utter_message(text=f"{i+1}. Book title: {book_title} \n  Book author: {book_author} \n  Review by: {review_by} \n  Publication date: {publication_dt} \n Review link: {review_url}")
-                    dispacther.utter_message(text="\n")
+                    dispacther.utter_message(text=f"{i+1}. Book title: {book_title}\nBook author: {book_author}\nReview by: {review_by}\nPublication date: {publication_dt}\nReview link: {review_url}\n")
+            else:
+                dispacther.utter_message(response="utter_failed")
         
         else:
-            dispacther.utter_message(template="utter_failed")
+            dispacther.utter_message(response="utter_can't_skip_all")
 
-        return []
+        return [AllSlotsReset()]
 
 class ValidateBookReview(FormValidationAction):
     """Validates Slots of the book_review_form"""
@@ -329,66 +351,63 @@ class ValidateBookReview(FormValidationAction):
 
     async def validate_number(
         self, 
-        value: Text,
+        slot_value: Any,
         dispatcher: CollectingDispatcher,
         tracker: Tracker,
-        domain: Dict[Text, Any],
+        domain: DomainDict,
     ) -> Dict[Text, Any]:
         """Validate value of 'number' slot"""
-        if not value:
-            return {"number": None}
-        
-        if type(value) is str:
+        if slot_value:
+            slot_value = str(slot_value)
+
+            if slot_value.lower() == "skip":
+                return {"number": "skip"}
+
             number = tracker.get_slot("number")
-            if number.lower() == 'none':
-                return {"number": None}
+            number = str(number)
+            
             if len(number) == 10 or len(number) == 13:
                 return {"number": number}
             else:
-                dispatcher.utter_message(template="utter_wrong_number")
+                dispatcher.utter_message(response="utter_wrong_amount")
                 return {"number": None}
         
-        dispatcher.utter_message(template="utter_wrong_type")
+        dispatcher.utter_message(response="utter_wrong_type")
         return {"number": None}
 
     async def validate_title(
         self,
-        value: Text,
+        slot_value: Any,
         dispatcher: CollectingDispatcher,
         tracker: Tracker,
-        domain: Dict[Text, Any],
+        domain: DomainDict,
     ) -> Dict[Text, Any]:
         """Validate value of 'title' slot"""
-        if not value:
-            return {"title": None}
-
-        if type(value) is str:
-            title = tracker.get_slot("title")
-            if title.lower() == 'none':
-                return {"title": None}
-            return {"title": title}
+        if type(slot_value) is str:
+            if slot_value.lower() == "skip":
+                return {"title": "skip"}
+            else:
+                return {"title": slot_value}            
         
-        dispatcher.utter_message(template="utter_wrong_type")
+        dispatcher.utter_message(response="utter_wrong_type")
         return {"title": None}
 
     async def validate_PERSON(
         self,
-        value: Text,
+        slot_value: Any,
         dispatcher: CollectingDispatcher,
         tracker: Tracker,
-        domain: Dict[Text, Any],
+        domain: DomainDict,
     ) -> Dict[Text, Any]:
         """Validate value of 'PERSON' slot"""
-        if not value:
-            return {"PERSON": None}
+        if slot_value.lower() == "skip":
+            return {"PERSON": "skip"}
         
-        if type(value) is str:
+        if type(slot_value) is str:
             author = tracker.get_slot("PERSON")
-            if author.lower() == 'none':
-                return {"PERSON": None}
             return {"PERSON": author}
         
-        dispatcher.utter_message(template="utter_wrong_type")
+        dispatcher.utter_message(response="utter_wrong_type")
         return {"PERSON": None}
 
 class ActionBookDetail(Action):
@@ -413,32 +432,41 @@ class ActionBookDetail(Action):
         publisher = tracker.get_slot("publisher")
         title = tracker.get_slot("title")
 
-        if age_group is not None or author is not None or contributor is not None or number is not None or amount_of_money is not None or publisher is not None or title is not None:
+        param = [age_group, author, contributor, number, amount_of_money, publisher, title]
+        param = checkParam(param)
+
+        if param is not None:
+
+            for idx, val in enumerate(param):
+                if val == "skip":
+                    param[idx] = None
             
             url = f"https://api.nytimes.com/svc/books/v3/lists/best-sellers/history.json"
 
             parameters = {
                 'api-key': api_key,
-                'age-group': age_group,
-                'author': author,
-                'contributor': contributor,
-                'isbn': number,
-                'price': amount_of_money,
-                'publisher': publisher,
-                'title': title,
+                'age-group': param[0],
+                'author': param[1],
+                'contributor': param[2],
+                'isbn': param[3],
+                'price': param[4],
+                'publisher': param[5],
+                'title': param[6],
             }
 
             response = requests.get(url, params=parameters)
             data = response.json()
 
+            data_range = data["num_results"]
+            if data_range > 18:
+                data_range = 18
+
             if data["status"] == "ERROR":
                 dispacther.utter_message(text="This requires at least one parameter")
-            elif data["results"] is None:
-                dispacther.utter_message(template="utter_doesnt_exist")
-            else:
+            elif data["results"]:
                 dispacther.utter_message(text="Here's a list of book's detail \n")
 
-                for i in range(9):
+                for i in range(data_range):
                     title = data["results"][i]["title"]
                     description = data["results"][i]["description"]
                     contributor = data["results"][i]["contributor"]
@@ -449,13 +477,14 @@ class ActionBookDetail(Action):
                     isbn10 = data["results"][i]["isbns"][0]["isbn10"]
                     isbn13 = data["results"][i]["isbns"][0]["isbn13"]
                     review_url = data["results"][i]["reviews"][0]["book_review_link"]
-                    dispacther.utter_message(text=f"{i+1}.Title: {title} \n Description: {description} \n Contributor: {contributor} \n  Author: {author} \n Price: {price} $ \n Age-group: {age_group} \n Publisher: {publisher} \n Isbn's : {isbn10}, {isbn13} \n Review link: {review_url}")
-                    dispacther.utter_message(text="\n")
+                    dispacther.utter_message(text=f"{i+1}.Title: {title}\nDescription: {description}\nContributor: {contributor}\nAuthor: {author}\nPrice: {price} $\nAge-group: {age_group}\nPublisher: {publisher}\nIsbn's : {isbn10}, {isbn13}\nReview link: {review_url}\n")
+            else:
+                dispacther.utter_message(response="utter_failed")
 
         else:
-            dispacther.utter_message(template="utter_failed")
+            dispacther.utter_message(response="utter_can't_skip_all")
 
-        return []
+        return [AllSlotsReset()]
 
 class ValidateBookDetail(FormValidationAction):
     """Validates Slots of the book_detail_form"""
@@ -466,130 +495,149 @@ class ValidateBookDetail(FormValidationAction):
 
     async def validate_age_group(
         self, 
-        value: Text,
+        slot_value: Any,
         dispatcher: CollectingDispatcher,
         tracker: Tracker,
-        domain: Dict[Text, Any],
+        domain: DomainDict,
     ) -> Dict[Text, Any]:
         """Validate value of 'age_group' slot"""
+        if slot_value:
+            slot_value = str(slot_value)
 
-        if not value:
-            return {"age_group": None}
+            if slot_value.lower() == "skip":
+                return {"age_group": "skip"}
 
-        if type(value) is str:
             age_group = tracker.get_slot("age_group")
-            if age_group.lower() == 'none':
-                return {"age_group": None}
-            return {"age_group": age_group}
+            age_group = int(age_group)
+            
+            if age_group > 0:
+                age_group = str(age_group)
+                return {"number": age_group}
+            else:
+                dispatcher.utter_message(response="utter_wrong_amount")
+                return {"number": None}
         
-        dispatcher.utter_message(template="utter_wrong_type")
-        return {"age_group": None}
+        dispatcher.utter_message(response="utter_wrong_type")
+        return {"number": None}
 
     async def validate_PERSON(
         self,
-        value: Text,
+        slot_value: Any,
         dispatcher: CollectingDispatcher,
         tracker: Tracker,
-        domain: Dict[Text, Any],
+        domain: DomainDict,
     ) -> Dict[Text, Any]:
         """Validate value of 'PERSON' slot"""
+        if slot_value.lower() == "skip":
+            return {"PERSON": "skip"}
 
-        if not value:
-            return {"PERSON": None}
-
-        if type(value) is str:
+        if type(slot_value) is str:
             author = tracker.get_slot("PERSON")
-            if author.lower() == 'none':
-                return {"author": None}
             return {"PERSON": author}
         
-        dispatcher.utter_message(template="utter_wrong_type")
+        dispatcher.utter_message(response="utter_wrong_type")
         return {"PERSON": None}
 
     async def validate_number(
         self,
-        value: Text,
+        slot_value: Any,
         dispatcher: CollectingDispatcher,
         tracker: Tracker,
-        domain: Dict[Text, Any],
+        domain: DomainDict,
     ) -> Dict[Text, Any]:
         """Validate value of 'number' slot"""
-        
-        if not value:
-            return {"number": None}
+        if slot_value:
+            slot_value = str(slot_value)
 
-        if type(value) is str:
+            if slot_value.lower() == "skip":
+                return {"number": "skip"}
+
             number = tracker.get_slot("number")
-            if number.lower() == 'none':
-                return {"number": None}
+            number = str(number)
+            
             if len(number) == 10 or len(number) == 13:
                 return {"number": number}
             else:
-                dispatcher.utter_message(template="utter_wrong_amount")
+                dispatcher.utter_message(response="utter_wrong_amount")
                 return {"number": None}
         
-        dispatcher.utter_message(template="utter_wrong_type")
+        dispatcher.utter_message(response="utter_wrong_type")
         return {"number": None}
 
-    async def validate_amount_of_money(self,
-        value: Text,
+    async def validate_amount_of_money(
+        self,
+        slot_value: Any,
         dispatcher: CollectingDispatcher,
         tracker: Tracker,
-        domain: Dict[Text, Any],
+        domain: DomainDict,
     ) -> Dict[Text, Any]:
         """Validate value of 'amount-of-money' slot"""
+        if slot_value.lower() == "skip":
+            return {"amount-of-money": "skip"}
 
-        if not value:
-            return {"amount-of-money": None}
-
-        if type(value) is str:
+        if type(slot_value) is str:
             amount_of_money = tracker.get_slot("amount-of-money")
-            if amount_of_money.lower() == 'none':
-                return {"amount-of-money": None}
             if int(amount_of_money) <= 0:
                 dispatcher.utter_message(text= "The price can't be 0 or bellow 0")
                 return {"amount-of-money": None}
             return {"amount-of-money": amount_of_money}
         
-        dispatcher.utter_message(template="utter_wrong_type")
+        dispatcher.utter_message(response="utter_wrong_type")
         return {"amount-of-money": amount_of_money}
 
-    async def validate_publisher(self,
-        value: Text,
+    async def validate_publisher(
+        self,
+        slot_value: Any,
         dispatcher: CollectingDispatcher,
         tracker: Tracker,
-        domain: Dict[Text, Any],
+        domain: DomainDict,
     ) -> Dict[Text, Any]:
         """Validate value of 'publisher' slot"""
+        if slot_value.lower() == "skip":
+            return {"publisher": "skip"}
 
-        if not value:
-            return {"publisher": None}
-
-        if type(value) is str:
+        if type(slot_value) is str:
             publisher = tracker.get_slot("publisher")
-            if publisher.lower() == 'none':
-                return {"publisher": None}
             return {"publisher": publisher}
         
-        dispatcher.utter_message(template="utter_wrong_type")
+        dispatcher.utter_message(response="utter_wrong_type")
         return {"publisher": publisher}
 
-    async def validate_title(self,
-        value: Text,
+    async def validate_title(
+        self,
+        slot_value: Any,
         dispatcher: CollectingDispatcher,
         tracker: Tracker,
-        domain: Dict[Text, Any],
+        domain: DomainDict,
     ) -> Dict[Text, Any]:
         """Validate value of 'title' slot"""
-
-        if not value:
-            return {"title": None}
-
-        if type(value) is str:
-            title = tracker.get_slot("title")
-            if title.lower() == 'none':
-                return {"title": None}
-            return {"title": title}
+        if type(slot_value) is str:
+            if slot_value.lower() == "skip":
+                return {"title": "skip"}
+            else:
+                return {"title": slot_value}
         
-        dispatcher.utter_message(template="utter_wrong_type")
+        dispatcher.utter_message(response="utter_wrong_type")
         return {"title": title}
+
+    async def validate_contributor(
+        self, 
+        slot_value: Any,
+        dispatcher: CollectingDispatcher, 
+        tracker: Tracker, 
+        domain: DomainDict,
+    ) -> Dict[Text, Any]:
+        """Validate value of 'contributor' slot"""
+        if slot_value.lower() == "skip":
+            return {"contributor": "skip"}
+
+        if type(slot_value) is str:
+            contributor = tracker.get_slot("contributor")
+            return {"contributor": contributor}
+        
+        dispatcher.utter_message(response="utter_wrong_type")
+        return {"contributor": None}
+
+
+def checkParam(param):
+    return [None if val == "skip" else val for val in param]
