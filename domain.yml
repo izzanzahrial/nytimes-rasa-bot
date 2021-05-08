@@ -3,9 +3,10 @@ session_config:
   session_expiration_time: 60
   carry_over_slots_to_new_session: true
 intents:
+- inform
+- book_review
 - list_best_seller
 - deny
-- inform
 - greet
 - list_best_seller_category
 - goodbye
@@ -17,8 +18,8 @@ intents:
 - thanks
 - explain
 - list_best_seller_overview
-- book_review
 - book_detail
+- help
 entities:
 - PERSON
 - amount-of-money
@@ -28,31 +29,31 @@ entities:
 - title
 slots:
   amount-of-money:
-    type: any
+    type: text
     influence_conversation: false
   time:
-    type: any
+    type: text
     influence_conversation: false
   number:
-    type: any
+    type: text
     influence_conversation: false
   PERSON:
-    type: any
+    type: text
     influence_conversation: false
   category:
-    type: any
+    type: text
     influence_conversation: false
   title:
-    type: any
+    type: text
     influence_conversation: false
   age_group:
-    type: any
+    type: text
     influence_conversation: false
   contributor:
-    type: any
+    type: text
     influence_conversation: false
   publisher:
-    type: any
+    type: text
     influence_conversation: false
 responses:
   utter_greet:
@@ -85,25 +86,27 @@ responses:
   utter_chit_chat:
   - text: Bla bla bla, please continue.
   utter_ask_category:
-  - text: Based on what category do you want to search? (You can use "None" as an input)
+  - text: Based on what category do you want to search? (You can use "skip" if you wanna skip the parameter)
   utter_ask_time:
-  - text: In which time frame do you want to search? (You can use "None" as an input)
+  - text: In which time frame do you want to search? (You can use "skip" if you wanna skip the parameter)
   utter_ask_number:
-  - text: What is the isbn number? 10 or 13 (You can use "None" as an input)
+  - text: What is the isbn number? 10 or 13 (You can use "skip" if you wanna skip the parameter)
   utter_ask_title:
-  - text: What is the title of the book? (You can use "None" as an input)
+  - text: What is the title of the book? (You can use "skip" if you wanna skip the parameter)
   utter_ask_PERSON:
-  - text: What is the name of the author? (You can use "None" as an input)
+  - text: What is the name of the author? (You can use "skip" if you wanna skip the parameter)
   utter_ask_age_group:
-  - text: In which age-group do you want to search? (You can use "None" as an input)
+  - text: In which age-group do you want to search? (You can use "skip" if you wanna skip the parameter)
   utter_ask_contributor:
-  - text: What is the name of the contributor? (You can use "None" as an input)
+  - text: What is the name of the contributor? (You can use "skip" if you wanna skip the parameter)
   utter_ask_amount_of_money:
-  - text: What is the price of the book? (You can use "None" as an input)
+  - text: What is the price of the book? (You can use "skip" if you wanna skip the parameter)
   utter_ask_publisher:
-  - text: What is the name of the publisher? (You can use "None" as an input)
+  - text: What is the name of the publisher? (You can use "skip" if you wanna skip the parameter)
   utter_failed:
   - text: I'm sorry, i seems can't find what you're searching.
+  utter_can't_skip_all:
+  - text: You can't skipp all the parameter.
   utter_wrong_type:
   - text: I'm sorry, that is not a valid input.
   utter_wrong_number:
@@ -132,10 +135,6 @@ actions:
 - action_list_best_seller
 - action_list_best_seller_category
 - action_list_best_seller_overview
-- utter_anything_else
-- utter_goodbye
-- utter_greet
-- utter_help
 - validate_book_detail_form
 - validate_book_review_form
 - validate_list_best_seller_form
@@ -145,107 +144,68 @@ forms:
     category:
     - type: from_entity
       entity: category
-    - intent:
-      - none
-      - inform
-      - list_best_seller_form
-      type: from_text
+    - type: from_text
+      intent: inform
     time:
     - type: from_entity
       entity: time
-    - intent:
-      - none
-      - inform
-      - list_best_seller_form
-      type: from_text
+    - type: from_text
+      intent: inform
   list_best_seller_overview_form:
     time:
     - type: from_entity
       entity: time
-    - intent:
-      - none
-      - inform
-      - list_best_seller_overview_form
-      type: from_text
+    - type: from_text
+      intent: inform
   book_review_form:
     number:
     - type: from_entity
       entity: number
-    - intent:
-      - none
-      - inform
-      - book_review_form
-      type: from_text
+    - type: from_text
+      intent: inform
     title:
     - type: from_entity
       entity: title
-    - intent:
-      - none
-      - inform
-      - book_review_form
-      type: from_text
+    - type: from_text
+      intent: inform
     PERSON:
     - type: from_entity
       entity: PERSON
-    - intent:
-      - none
-      - inform
-      - book_review_form
-      type: from_text
+    - type: from_text
+      intent: inform
   book_detail_form:
     age_group:
     - type: from_entity
       entity: number
-    - intent:
-      - none
-      - inform
-      - book_detail_form
-      type: from_text
+    - type: from_text
+      intent: inform
     PERSON:
     - type: from_entity
       entity: PERSON
-    - intent:
-      - none
-      - inform
-      - book_detail_form
-      type: from_text
+    - type: from_text
+      intent: inform
     contributor:
     - type: from_entity
       entity: PERSON
-    - intent:
-      - none
-      - inform
-      - book_detail_form
-      type: from_text
+    - type: from_text
+      intent: inform
     number:
     - type: from_entity
       entity: number
-    - intent:
-      - none
-      - inform
-      - book_detail_form
-      type: from_text
+    - type: from_text
+      intent: inform
     amount-of-money:
     - type: from_entity
       entity: amount-of-money
-    - intent:
-      - none
-      - inform
-      - book_detail_form
-      type: from_text
+    - type: from_text
+      intent: inform
     publisher:
     - type: from_entity
       entity: PERSON
-    - intent:
-      - none
-      - inform
-      - book_detail_form
-      type: from_text
+    - type: from_text
+      intent: inform
     title:
     - type: from_entity
       entity: title
-    - intent:
-      - none
-      - inform
-      - book_detail_form
-      type: from_text
+    - type: from_text
+      intent: inform

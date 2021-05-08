@@ -1,8 +1,11 @@
-#activate conda
+#activate conda env
 conda activate rasavenv
 
-#train rasa nlu data
+#train rasa nlu data if change made
 rasa train
+
+#validate if there are any errors
+rasa data validate
 
 #rasa run custom action
 rasa run actions
@@ -12,3 +15,11 @@ rasa interactive
 
 #rasa run in commands
 rasa shell
+
+#run ngrok
+ngrok http 5005
+
+#run server
+rasa run
+
+rasa run actions -> ngrok http 5005 -> rasa run

@@ -206,12 +206,9 @@ nlu:
     - [Sophia Amoruso](PERSON)
     - [Debbie Macomber](PERSON)
     - [Ballantine](PERSON)
-    - [None](time)
-    - [None](PERSON)
-    - [None](category)
-    - [None](title)
-    - [None](number)
-    - [None](amount-of-money)
+    - Skip
+    - skip
+    - [barbarian days](title)
 - intent: explain
   examples: |
     - Why do you need this
@@ -322,6 +319,7 @@ nlu:
     - Show me book review of [6020402666](number)
     - Show me list book review of [The four winds](title)
     - Show me the book review list by [Justin Scott](PERSON)
+    - show me book review
 - intent: book_detail
   examples: |
     - I want to search book detail
@@ -345,6 +343,3 @@ nlu:
     - Show me book detail of [#GIRLBOSS](title)
     - I want to search book detail of [A girl's guide to moving on](title)
     - I want to serach book detail by [Ballantine](PERSON)
-- intent: none
-  examples: |
-    - None
